@@ -79,8 +79,8 @@ func main() {
 		Rewrite: func(r *httputil.ProxyRequest) {
 			rewriteRequest(r, u)
 		},
+		Transport: t,
 	}
-	proxy.Transport = t
 
 	server := &http.Server{
 		Addr:    addr,
@@ -156,7 +156,10 @@ func rewriteRequest(r *httputil.ProxyRequest, u *url.URL) {
 		fmt.Fprintf(os.Stderr, "Problem reading request body: %v\n", err)
 		return
 	}
-
+	if err = r.In.Body.Close(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error closing request body: %v\n", err)
+		return
+	}
 	b, err := json.Marshal(transformChat(c))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error marshalling request body: %v\n", err)
@@ -172,6 +175,10 @@ func wellFormedJSON(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, err := io.ReadAll(r.Body)
 		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+		if err = r.Body.Close(); err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}

@@ -120,6 +120,7 @@ var _ = Describe("prompt reverse proxy", func() {
 			Expect(res.StatusCode).To(Equal(http.StatusOK))
 			b, err := io.ReadAll(res.Body)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(res.Body.Close()).To(Succeed())
 
 			expectedJSON, err := replaceDatamarker(
 				Chat{
@@ -155,6 +156,7 @@ var _ = Describe("prompt reverse proxy", func() {
 			Expect(res.StatusCode).To(Equal(http.StatusOK))
 			_, err = io.ReadAll(res.Body)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(res.Body.Close()).To(Succeed())
 			Expect(th.payload.Model).To(Equal("gpt-3.5-turbo"))
 		})
 
@@ -221,6 +223,7 @@ var _ = Describe("prompt reverse proxy", func() {
 						Expect(res.StatusCode).To(Equal(http.StatusOK))
 						_, err = io.ReadAll(res.Body)
 						Expect(err).ToNot(HaveOccurred())
+						Expect(res.Body.Close()).To(Succeed())
 					}
 					for th.datamarker == 0 || th.datamarker == 0xE000 {
 						makeRequestWithPUACodePoint()
