@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/rand"
+	"math/rand/v2"
 	"net"
 	"net/http"
 	"net/url"
@@ -40,7 +40,7 @@ var _ = Describe("prompt reverse proxy", func() {
 	)
 
 	BeforeEach(func() {
-		port := 10_000 + rand.Intn(10_000)
+		port := 10_000 + rand.IntN(10_000)
 		reverseProxyAddr = fmt.Sprintf("127.0.0.1:%d", port)
 
 		var err error
